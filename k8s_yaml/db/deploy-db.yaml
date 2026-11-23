@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: project
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      tier: db
+
+  strategy:
+    type: Recreate
+
+  template:
+    metadata:
+      labels:
+        tier: db
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          ports:
+            - containerPort: 3306
+
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "root"
+            - name: MYSQL_DATABASE
+              value: "vet"
+            - name: MYSQL_USER
+              value: "vet_user"
+            - name: MYSQL_PASSWORD
+              value: "password"
+
+          volumeMounts:
+            - name: data-volume
+              mountPath: /var/lib/mysql
+
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: db

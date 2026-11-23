@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: dummy-worker
+  namespace: lab01
+spec:
+  containers:
+  - name: dummy-worker
+    image: songyibkb/dummy-worker:1.0
